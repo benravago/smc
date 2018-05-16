@@ -1,0 +1,58 @@
+
+# "name"    Name
+# 'event'   Event
+# 'extends' Extends
+# 'fsm'     FSM
+# 'package' Package
+# 'initial' Initial
+# 'state'   State
+# '{'       BeginBlock
+# '}'       EndBlock
+
+package smc
+
+fsm smc {
+  state outside initial {
+    event 'package' newPackage {}
+    event 'fsm' newFSM {}
+  }
+  state newPackage {
+    event "name" outside { setPackage }
+  }
+  state newFSM {
+    event "name" inFSM { setFSM }
+  }
+  state inFSM {
+    event '{' toState {}
+  }
+  state toState {
+    event 'state' newState {}
+    event '}' outside { generateCode }
+  }
+  state newState {
+    event "name" inState { setState }
+  }
+  state inState {
+    event 'initial' inState { setInitialState }
+    event 'extends' inExtend {}
+    event '{' toEvent {}
+  }
+  state inExtend {
+    event "name" inState { setSuperState }
+  }
+  state toEvent {
+    event 'event' newEvent {}
+    event '}' toState {}
+  }
+  state newEvent {
+    event "name" inEvent { setEvent }
+  }
+  state inEvent {
+    event "name" inEvent { setNextState }
+    event '{' inAction {}
+  }
+  state inAction {
+    event "name" inAction { setAction }
+    event '}' toEvent {}
+  }
+}

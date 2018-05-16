@@ -1,0 +1,34 @@
+#
+set -ex
+
+mkdir -p bin smc
+cp smc{,Context}.java smc
+
+if [ ! -e smc.jar ]; then
+  cp bootstrap/*.java smc
+  rm -f bin/smc/*.class
+  javac -cp bin -d bin -sourcepath . smc/smc.java
+  jar -cfe smc.jar smc.smc -C bin/ smc
+fi
+
+mkdir -p tmp new
+
+rm -f bin/smc/*.class
+
+java -jar smc.jar smc.fsm
+cp smc{FSM,Actions,Events}.java tmp
+mv smc{FSM,Actions,Events}.java smc
+
+rm -f bin/smc/*.class
+
+javac -cp bin -d bin -sourcepath . smc/smc.java
+java -cp bin smc.smc smc.fsm
+cp smc{FSM,Actions,Events}.java new
+mv smc{FSM,Actions,Events}.java smc
+
+diff -aur tmp new
+
+rm -f smc.jar
+jar -cfe smc.jar smc.smc -C bin/ smc
+
+rm -fr bin smc new tmp
