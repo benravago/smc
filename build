@@ -1,0 +1,25 @@
+#
+set -ex
+
+export PATH=$PATH:/opt/jdk10/bin
+
+rm -fr bin generated
+mkdir -p bin generated
+
+if [ ! -e smc.jar ]; then
+  rm -fr bin/*
+  javac -d bin -sourcepath src:bootstrap src/smc.java
+  jar -cfe smc.jar smc -C bin/ .
+fi
+
+java -jar smc.jar src/smc.fsm
+mv smc*.java generated
+
+rm -fr bin/* 
+rm -v smc.jar
+
+javac -d bin -sourcepath src:generated src/smc.java
+jar -cfe smc.jar smc -C bin/ .
+
+diff -r bootstrap generated
+
