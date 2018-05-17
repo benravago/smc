@@ -1,7 +1,7 @@
 #
 set -ex
 
-export PATH=$PATH:/opt/jdk10/bin
+## export PATH=$PATH:/opt/jdk10/bin
 
 rm -fr bin generated
 mkdir -p bin generated
